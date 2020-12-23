@@ -27,7 +27,7 @@ def store_last_seen_id(last_seen_id, file_name):
 
 
 
-hashtag = "#christmas"
+hashtags = "#christmas"
 tweetnumber = 15
 
 def reply_to_tweets():

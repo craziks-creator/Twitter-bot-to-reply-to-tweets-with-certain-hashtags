@@ -1,51 +1,22 @@
-import tweepy
-import time
+#!/usr/bin/env python
+import tweepy, random
+#from our keys module (keys.py), import the keys dictionary
+from keys import keys
 
-CONSUMER_KEY = '#A'
-CONSUMER_SECRET = '#'
-ACCESS_KEY = '#'
-ACCESS_SECRET = '#'
-
+CONSUMER_KEY = keys['consumer_key']
+CONSUMER_SECRET = keys['consumer_secret']
+ACCESS_TOKEN = keys['access_token']
+ACCESS_TOKEN_SECRET = keys['access_token_secret']
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
+auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth)
-
-
-
-def retrieve_last_seen_id(file_name):
-    f_read = open(file_name, 'r')
-    last_seen_id = int(f_read.read().strip())
-    f_read.close()
-    return last_seen_id
-
-def store_last_seen_id(last_seen_id, file_name):
-    f_write = open(file_name, 'w')
-    f_write.write(str(last_seen_id))
-    f_write.close()
-    return
-
-
-
-hashtags = "#christmas"
-tweetnumber = 15
-
-def reply_to_tweets():
-    print('retrieving and replying to tweets...', flush=True)
-    # DEV NOTE: use 1060651988453654528 for testing.
-    last_seen_id = retrieve_last_seen_id(FILE_NAME)
-    
-    if len(tweet['entities']['hashtags']) > 0:
-						hashtags = tweet['entities']['hashtags'][0]['text']
-						TwitterAPI.bot_tweet(twitter_object_lookup,'#'+hashtags + ' '+ message)
-						print "tweeted with message -> " , '#'+hashtags + ' '+ message
-
-						TwitterAPI.bot_retweet(twitter_object_lookup,tweet['id'])
-						print "retweeted the tweet_id -> " , tweet['id']
-
-
-while True:
-    reply_to_tweets()
-    time.sleep(15)
-            
-
+ 
+twt = api.search("#mybot",result_type="new",count=5) 
+ 
+for s in twt:
+   print(s.id)
+   sn = s.user.screen_name
+   m = "@%s " % (sn)
+   api.update_status(status=m, in_reply_to_status_id = s.id)
+print("Done!!!")

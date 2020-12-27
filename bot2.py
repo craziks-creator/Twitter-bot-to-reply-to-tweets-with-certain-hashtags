@@ -1,45 +1,36 @@
 #!/usr/bin/env python
-import tweepy, random, time
+import tweepy, random, time, logging
 #from our keys module (keys.py), import the keys dictionary
-from keys import keys
+from secrets import key
 
-CONSUMER_KEY = keys['consumer_key']
-CONSUMER_SECRET = keys['consumer_secret']
-ACCESS_TOKEN = keys['access_token']
-ACCESS_TOKEN_SECRET = keys['access_token_secret']
+logging.basicConfig()
+logging.getLogger().setLevel(logging.INFO)
+
+CONSUMER_KEY = key[0]
+CONSUMER_SECRET = key[1]
+ACCESS_TOKEN = key[2]
+ACCESS_TOKEN_SECRET = key[3]
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth)
 
-file_name =("E:\\hopebot\\asc\last_seen_id.txt", "r")
-
-
-
-def retrieve_last_seen_id(file_name):
-    f_read = open(file_name, 'r')
-    last_seen_id = int(f_read.read().strip())
-    f_read.close()
-    return last_seen_id
-
-def store_last_seen_id(last_seen_id, file_name):
-    f_write = open(file_name, 'w')
-    f_write.write(str(last_seen_id))
-    f_write.close()
-    return
-
  
-
-
 def reply():
- twt = api.search("python",result_type="mixed",count=25) 
-  for s in twt:
-     print(s.id)
-     sn = s.user.screen_name
-     m = "@%s chup bsdk " % (sn)
-     api.update_status(status=m, in_reply_to_status_id = s.id)
-     store_last_seen_id(file_name, s.id)
-      print("Done!!!")
+    twt = api.search("python",result_type="mixed",count=5) 
+    for s in twt:
+        logging.info(f"Found tweet by {s.user.screen_name} mentioning searched keyword")
+        if s.in_reply_to_status_id is not None or \
+            s.user.id == api.me().id:
+            logging.info("Not original tweet, but reply to a tweet...")    
+            continue
+        else:
+            try:
+                logging.info("Replying to tweet...")
+                m = "@%s chup bsdk " % (s.user.screen_name)
+                api.update_status(status=m, in_reply_to_status_id = s.id)
+            except Exception as e:
+                logging.error("Error on reply", exc_info=True)
 
 while True:
     reply()

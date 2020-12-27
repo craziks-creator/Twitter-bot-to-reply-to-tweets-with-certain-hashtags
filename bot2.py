@@ -29,6 +29,7 @@ def reply():
                 logging.info("Replying to tweet...")
                 m = "@%s chup bsdk " % (s.user.screen_name)
                 api.update_status(status=m, in_reply_to_status_id = s.id)
+                time.sleep(5)
             except Exception as e:
                 logging.error("Error on reply", exc_info=True)
 
